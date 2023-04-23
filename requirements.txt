@@ -7,3 +7,4 @@ flask-login
 SQLAlchemy~=2.0.5.post1
 WTForms~=3.0.1
 Werkzeug~=2.2.3
+bs4

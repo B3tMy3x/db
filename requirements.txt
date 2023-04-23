@@ -1,0 +1,9 @@
+requests~=2.28.2
+argparse
+flask~=2.2.3
+flask-sqlalchemy
+flask_wtf
+flask-login
+SQLAlchemy~=2.0.5.post1
+WTForms~=3.0.1
+Werkzeug~=2.2.3

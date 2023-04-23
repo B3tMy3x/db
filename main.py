@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, make_response, request, session, abort
+from flask import Flask, render_template, redirect, make_response, request, session, abort, g
 from data import db_session
 from data.users import User
 from data.news import News, NewsForm
@@ -20,7 +20,9 @@ def main():
 
 
 def is_admin():
-    if User.role == "admin":
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.get_id()).first()
+    if user.role == "admin":
         return True
     return False
 
@@ -126,21 +128,22 @@ def edit_news(id):
         news = db_sess.query(News).filter(News.id == id,
                                           News.user == current_user
                                           ).first()
-        if news or User.role == "admin":
-            form.title.data = news.title
-            form.content.data = news.content
-            form.is_private.data = news.is_private
+        news1 = db_sess.query(News).filter(News.id == id).first()
+        if news or is_admin():
+            form.title.data = news1.title
+            form.content.data = news1.content
+            form.is_private.data = news1.is_private
         else:
             abort(404)
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         news = db_sess.query(News).filter(News.id == id,
                                           News.user == current_user).first()
-
-        if news or User.role == "admin":
-            news.title = form.title.data
-            news.content = form.content.data
-            news.is_private = form.is_private.data
+        news1 = db_sess.query(News).filter(News.id == id).first()
+        if news or is_admin():
+            news1.title = form.title.data
+            news1.content = form.content.data
+            news1.is_private = form.is_private.data
             db_sess.commit()
             return redirect('/feed')
         else:
@@ -157,8 +160,8 @@ def news_delete(id):
     news = db_sess.query(News).filter(News.id == id,
                                       News.user == current_user
                                       ).first()
-    if news or User.role == "admin":
-        db_sess.delete(news)
+    if news or is_admin():
+        db_sess.delete(db_sess.query(News).filter(News.id == id).first())
         db_sess.commit()
     else:
         abort(404)

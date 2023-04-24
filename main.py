@@ -102,7 +102,7 @@ def logout():
     logout_user()
     return redirect("/")
 
-@app.route('/news',  methods=['GET', 'POST'])
+@app.route('/news_edit',  methods=['GET', 'POST'])
 @login_required
 def add_news():
     form = NewsForm()
@@ -116,12 +116,33 @@ def add_news():
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/feed')
-    return render_template('news.html', title='Добавление новости',
+    return render_template('news_edit.html', title='Добавление новости',
                            form=form)
+
 
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_news(id):
+def viewing_news(id):
+    form = NewsForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        news = db_sess.query(News).filter(News.id == id, News.is_private != True).first()
+        if news:
+            form.title.data = news.title
+            form.content.data = news.content
+            form.is_private.data = news.is_private
+        else:
+            abort(404)
+
+    return render_template('news.html',
+                           news=news,
+                           title='Редактирование новости'
+                           )
+
+
+@app.route('/news_edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_edit(id):
     form = NewsForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
@@ -148,7 +169,7 @@ def edit_news(id):
             return redirect('/feed')
         else:
             abort(404)
-    return render_template('news.html',
+    return render_template('news_edit.html',
                            title='Редактирование новости',
                            form=form
                            )

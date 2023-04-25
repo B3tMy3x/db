@@ -2,15 +2,20 @@
 
 {% block content %}
 <br>
-<p>
-    <div class="col-md6">
-        <h1>{{news.title}}</h1>
-        <div>
-            {{news.content}}
-        </div>
-        <div>
-            Автор - {{news.user.name}}, Дата написания - {{news.created_date}}
+<center>
+    <div class="di1">
+        <div class="col-md6">
+            <h1>{{news.title}}</h1>
+            <div>
+                {{news.content}}
+            </div>
+            <div>
+                {{news.build}}
+            </div>
+            <div>
+                Автор - {{news.user.name}}, Дата написания - {{news.created_date}}
+            </div>
         </div>
     </div>
-</p>
+</center>
 {% endblock %}

@@ -4,7 +4,7 @@ from data.users import User
 from data.news import News, NewsForm
 import datetime
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-
+from data.guidedd import guidedata
 from forms.login import LoginForm
 from forms.user import RegisterForm
 import requests
@@ -111,6 +111,7 @@ def add_news():
         news = News()
         news.title = form.title.data
         news.content = form.content.data
+        news.build = form.build.data
         news.is_private = form.is_private.data
         current_user.news.append(news)
         db_sess.merge(current_user)
@@ -130,6 +131,7 @@ def viewing_news(id):
         if news:
             form.title.data = news.title
             form.content.data = news.content
+            form.build.data = guidedata(news.build)
             form.is_private.data = news.is_private
         else:
             abort(404)
@@ -153,6 +155,7 @@ def news_edit(id):
         if news or is_admin():
             form.title.data = news1.title
             form.content.data = news1.content
+            form.build.data = guidedata(news1.build)
             form.is_private.data = news1.is_private
         else:
             abort(404)
@@ -164,6 +167,7 @@ def news_edit(id):
         if news or is_admin():
             news1.title = form.title.data
             news1.content = form.content.data
+            news1.build = guidedata(form.build.data)
             news1.is_private = form.is_private.data
             db_sess.commit()
             return redirect('/feed')

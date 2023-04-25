@@ -17,7 +17,16 @@
         {{ form.content.label }}<br>
         {{ form.content(class="form-control") }}<br>
         {% for error in form.content.errors %}
-            <p content="alert alert-danger" role="alert">
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.build.label }}<br>
+        {{ form.build(class="form-control") }}<br>
+        {% for error in form.build.errors %}
+            <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>
         {% endfor %}

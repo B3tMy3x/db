@@ -3,15 +3,59 @@ from data import db_session
 from data.users import User
 from data.news import News, NewsForm
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from templates.guidedd import guidedata
 from forms.login import LoginForm
 from forms.user import RegisterForm
+import requests
 
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'j821fjw09h1jkh72w6g190i3bf12'
+TEMPLATES_AUTO_RELOAD = True
 
+def guidedata(a):
+    if len(a) == 10 and a.isnumeric():
+        r = f"https://www.dota2.com/workshop/builds/view?embedded=workshop&publishedfileid={a}&target_uri=https://steamcommunity.com&l=english&u=public"
+        r = requests.get(r)
+        r = r.text
+        r = r[r.find('<div id="itemBuildContent">'):r.find('		<br clear="both"/>')]
+        r = r.replace('</div>', '</div>\n')
+        with open('templates/news.html', 'w', encoding='utf-8') as f:
+            f.write('''{% extends "base.html" %}
+    {% block content %}
+    <br>
+        <div class="di1">
+            <div class="col-md6">
+                <h1>{{news.title}}</h1>
+                <div>
+                    {{news.content}}
+                </div>''' +
+            r +
+            '''<div>
+                    Автор - {{news.user.name}}, Дата написания - {{news.created_date}}
+                </div>
+            </div>
+        </div>
+    {% endblock %})
+            ''')
+    else:
+        with open('templates/news.html', 'w', encoding='utf-8') as f:
+            f.write('''{% extends "base.html" %}
+    {% block content %}
+    <br>
+        <div class="di1">
+            <div class="col-md6">
+                <h1>{{news.title}}</h1>
+                <div>
+                    {{news.content}}
+                </div>
+                <div>
+                    Автор - {{news.user.name}}, Дата написания - {{news.created_date}}
+                </div>
+            </div>
+        </div>
+    {% endblock %})''')
+    f.close()
 
 def main():
     db_session.global_init('db/blogs.db')
@@ -21,6 +65,8 @@ def main():
 def is_admin():
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.id == current_user.get_id()).first()
+    if type(user) != 'NoneType':
+        return False
     if user.role == "admin":
         return True
     return False
@@ -191,5 +237,7 @@ def news_delete(id):
         abort(404)
     return redirect('/feed')
 if __name__ == '__main__':
+    app.jinja_env.auto_reload = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
     main()
     app.run()

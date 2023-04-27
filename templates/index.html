@@ -14,9 +14,11 @@
     <div>
         {{item.content}}
     </div>
-    <div>
-        {{news.build}}
-    </div>
+    {% if qbuild == True%}
+        <div>
+            1 прикрепленная сборка
+        </div>
+    {% endif %}
     <div>
         Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
     </div>

@@ -57,6 +57,7 @@ def guidedata(a):
     {% endblock %})''')
     f.close()
 
+
 def main():
     db_session.global_init('db/blogs.db')
     app.run()
@@ -85,7 +86,7 @@ def visit():
 def index():
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.is_private != True)
-    return render_template("index.html", news=news, role=is_admin(), true=True)
+    return render_template("index.html", news=news, role=is_admin(), id=current_user.get_id(), true=True)
     if current_user.is_authenticated:
         news = db_sess.query(News).filter(
             (News.user == current_user) | (News.is_private != True))
@@ -110,7 +111,8 @@ def reqister():
         user = User(
             name=form.name.data,
             email=form.email.data,
-            about=form.about.data
+            about=form.about.data,
+            steam_id=form.steam_id.data
         )
         user.set_password(form.password.data)
         db_sess.add(user)
@@ -222,7 +224,15 @@ def news_edit(id):
                            title='Редактирование новости',
                            form=form
                            )
-
+@app.route('/profile/<int:id>', methods=['GET'])
+@login_required
+def viewing_profile(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == id).first()
+    return render_template('profile.html',
+                           user=user,
+                           title='Редактирование новости'
+                           )
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_delete(id):

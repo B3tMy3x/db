@@ -49,6 +49,15 @@
             </p>
         {% endfor %}
     </p>
+    <p>
+        {{ form.steam_id.label }}
+        {{ form.steam_id(class="form-control") }}
+        {% for error in form.about.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
     <p>{{ form.submit(type="submit", class="btn btn-danger") }}</p>
     {{message}}
 </form>

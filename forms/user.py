@@ -10,6 +10,7 @@ class RegisterForm(FlaskForm):
     password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
     name = StringField('Имя пользователя', validators=[DataRequired()])
     about = TextAreaField("Немного о себе")
+    steam_id = StringField('DOTA ID', validators=[DataRequired()])
     submit = SubmitField('Войти')
 
     def set_password(self, password):

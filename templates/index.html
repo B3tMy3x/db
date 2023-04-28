@@ -3,7 +3,8 @@
 {% block content %}
 {% if current_user.is_authenticated %}
     <br>
-    <a href="news_edit" class="btn btn-outline-success">Добавить новость</a>
+    <a href="/news_edit" class="btn btn-outline-success">Добавить новость</a>
+    <a href="/profile/{{ id }}" class="btn btn-outline-success">Профиль</a>
     <br>
 {% endif %}
 {% for item in news%}
@@ -14,7 +15,7 @@
     <div>
         {{item.content}}
     </div>
-    {% if qbuild == True%}
+    {% if item.build|length == 10 %}
         <div>
             1 прикрепленная сборка
         </div>

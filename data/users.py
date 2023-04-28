@@ -19,7 +19,9 @@ class User(SqlAlchemyBase, UserMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
     role = sqlalchemy.Column(sqlalchemy.String,
-                              index=True, unique=True, nullable=True)
+                              index=True, nullable=True)
+    steam_id = sqlalchemy.Column(sqlalchemy.String,
+                              index=True, nullable=True)
     news = orm.relationship("News", back_populates='user')
 
     def set_password(self, password):

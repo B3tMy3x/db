@@ -3,8 +3,9 @@
 {% block content %}
 {% if current_user.is_authenticated %}
     <br>
-    <a href="/news_edit" class="btn btn-outline-success">Добавить новость</a>
-    <a href="/profile/{{ id }}" class="btn btn-outline-success">Профиль</a>
+    <a href="/news_edit" class="btn btn-outline-info">Добавить новость</a>
+    <a href="/profile/{{ id }}" class="btn btn-outline-info">Профиль</a>
+    <a href="/profile/drafts" class="btn btn-outline-info">Мои Черновики</a>
     <br>
 {% endif %}
 {% for item in news%}
@@ -21,20 +22,18 @@
         </div>
     {% endif %}
     <div>
-        Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
+        <a href='/profile/{{ item.user_id }}'><button type="button" class="btn btn-outline-light">Автор - {{item.user.name}}, Дата написания - {{item.created_date}}</button></a>
     </div>
-    {% if (current_user.is_authenticated and current_user == item.user) or role == true%}
+    <br>
     <div>
+    {% if (current_user.is_authenticated and current_user == item.user) or role == true%}
         <a href="/news_edit/{{ item.id }}" class="btn btn-outline-info">
             Изменить
         </a>
         <a href="/news_delete/{{ item.id }}" class="btn btn-outline-danger">
             Удалить
         </a>
-    </div>
-{% endif %}
-    <br>
-    <div>
+    {% endif %}
         <a href="/news/{{ item.id }}" class="btn btn-outline-primary">
             Просмотр
         </a>

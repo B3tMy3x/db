@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, request, abort
 from data import db_session
 from data.users import User
 from data.news import News, NewsForm
+from data.opendotadata import getuserdata
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from forms.login import LoginForm
 from forms.user import RegisterForm
@@ -50,8 +51,8 @@ def guidedata(a):
                     {{news.content}}
                 </div>
                 <div>
-                    Автор - {{news.user.name}}, Дата написания - {{news.created_date}}
-                </div>
+                    <a href='/profile/{{ id }}'><button type="button" class="btn btn-outline-light">Автор - {{news.user.name}}, Дата написания - {{news.created_date}}</button></a>
+                <div>
             </div>
         </div>
     {% endblock %})''')
@@ -229,7 +230,11 @@ def news_edit(id):
 def viewing_profile(id):
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.id == id).first()
+    data = getuserdata(user.steam_id)
     return render_template('profile.html',
+                           steam=data[0],
+                           rank=data[1],
+                           avatar=data[2],
                            user=user,
                            title='Редактирование новости'
                            )

@@ -14,12 +14,13 @@ login_manager.init_app(app)
 app.config['SECRET_KEY'] = 'j821fjw09h1jkh72w6g190i3bf12'
 TEMPLATES_AUTO_RELOAD = True
 
+
 def guidedata(a):
     if len(a) == 10 and a.isnumeric():
         r = f"https://www.dota2.com/workshop/builds/view?embedded=workshop&publishedfileid={a}&target_uri=https://steamcommunity.com&l=english&u=public"
         r = requests.get(r)
         r = r.text
-        r = r[r.find('<div id="itemBuildContent">'):r.find('		<br clear="both"/>')]
+        r = r[r.find('<div id="itemBuildContent">'):r.find('</body>')]
         r = r.replace('</div>', '</div>\n')
         with open('templates/news.html', 'w', encoding='utf-8') as f:
             f.write('''{% extends "base.html" %}
@@ -30,12 +31,15 @@ def guidedata(a):
                 <h1>{{news.title}}</h1>
                 <div>
                     {{news.content}}
-                </div>''' +
+                </div>
+                <center>''' +
             r +
-            '''<div>
-                    Автор - {{news.user.name}}, Дата написания - {{news.created_date}}
+            '''</center>
+            <div>
+                    <a href='/profile/{{ user_id }}'><button type="button" class="btn btn-outline-light">Автор - {{news.user.name}}, Дата написания - {{news.created_date}}</button></a>
                 </div>
             </div>
+            <br>
         </div>
     {% endblock %})
             ''')
@@ -50,10 +54,11 @@ def guidedata(a):
                 <div>
                     {{news.content}}
                 </div>
+                <br>
                 <div>
-                    <a href='/profile/{{ id }}'><button type="button" class="btn btn-outline-light">Автор - {{news.user.name}}, Дата написания - {{news.created_date}}</button></a>
-                <div>
+                    <a href='/profile/{{ user_id }}'><button type="button" class="btn btn-outline-light">Автор - {{news.user.name}}, Дата написания - {{news.created_date}}</button></a>                <div>
             </div>
+        <br>
         </div>
     {% endblock %})''')
     f.close()
@@ -87,13 +92,12 @@ def visit():
 def index():
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.is_private != True)
-    return render_template("index.html", news=news, role=is_admin(), id=current_user.get_id(), true=True)
+    return render_template("index.html", news=news, role=is_admin(), id=current_user.get_id())
     if current_user.is_authenticated:
         news = db_sess.query(News).filter(
             (News.user == current_user) | (News.is_private != True))
     else:
         news = db_sess.query(News).filter(News.is_private != True)
-
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -127,6 +131,7 @@ def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -149,6 +154,7 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
+
 
 @app.route('/news_edit',  methods=['GET', 'POST'])
 @login_required
@@ -190,6 +196,19 @@ def viewing_news(id):
                            )
 
 
+@app.route('/drafts')
+@login_required
+def viewing_drafts():
+    db_sess = db_session.create_session()
+    news = db_sess.query(News).filter(News.user_id == current_user.get_id(), News.is_private == True)
+    return render_template("drafts.html", news=news, role=is_admin(), id=current_user.get_id(), true=True)
+    if current_user.is_authenticated:
+        news = db_sess.query(News).filter(
+            (News.user == current_user) | (News.is_private != True))
+    else:
+        news = db_sess.query(News).filter(News.is_private != True)
+
+
 @app.route('/news_edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_edit(id):
@@ -225,6 +244,8 @@ def news_edit(id):
                            title='Редактирование новости',
                            form=form
                            )
+
+
 @app.route('/profile/<int:id>', methods=['GET'])
 @login_required
 def viewing_profile(id):
@@ -238,6 +259,8 @@ def viewing_profile(id):
                            user=user,
                            title='Редактирование новости'
                            )
+
+
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_delete(id):
@@ -251,6 +274,8 @@ def news_delete(id):
     else:
         abort(404)
     return redirect('/feed')
+
+
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True

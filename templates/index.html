@@ -4,8 +4,8 @@
 {% if current_user.is_authenticated %}
     <br>
     <a href="/news_edit" class="btn btn-outline-primary">Добавить новость</a>
-    <a href="/profile/{{ id }}" class="btn btn-outline-primary">Профиль</a>
-    <a href="/drafts" class="btn btn-outline-primary">Мои Черновики</a>
+    <a href="/profile/{{ id }}" class="btn btn-outline-primary">Мой профиль</a>
+    <a href="/drafts" class="btn btn-outline-primary">Мои черновики</a>
     <br>
 {% endif %}
 {% for item in news%}

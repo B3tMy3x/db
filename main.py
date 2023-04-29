@@ -72,12 +72,9 @@ def main():
 def is_admin():
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.id == current_user.get_id()).first()
-    print(str(type(user)))
     if str(type(user)) == "<class 'NoneType'>":
-        print(False)
         return False
     elif user.role == "admin":
-        print(True)
         return True
     return False
 

@@ -19,7 +19,7 @@
     </div>
     <br>
     <div>
-    {% if (current_user.is_authenticated and current_user == item.user) or role == true%}
+    {% if (current_user.is_authenticated and current_user == item.user) or role == True%}
         <a href="/news_edit/{{ item.id }}" class="btn btn-outline-info">
             Изменить
         </a>

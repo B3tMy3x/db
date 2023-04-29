@@ -36,7 +36,7 @@ def guidedata(a):
             r +
             '''</center>
             <div>
-                    <a href='/profile/{{ user_id }}'><button type="button" class="btn btn-outline-light">Автор - {{news.user.name}}, Дата написания - {{news.created_date}}</button></a>
+                    <a href='/profile/{{ news.user_id }}'><button type="button" class="btn btn-outline-light">Автор - {{news.user.name}}, Дата написания - {{news.created_date}}</button></a>
                 </div>
             </div>
             <br>
@@ -56,7 +56,7 @@ def guidedata(a):
                 </div>
                 <br>
                 <div>
-                    <a href='/profile/{{ user_id }}'><button type="button" class="btn btn-outline-light">Автор - {{news.user.name}}, Дата написания - {{news.created_date}}</button></a>                <div>
+                    <a href='/profile/{{ news.user_id }}'><button type="button" class="btn btn-outline-light">Автор - {{news.user.name}}, Дата написания - {{news.created_date}}</button></a>                <div>
             </div>
         <br>
         </div>
@@ -72,9 +72,12 @@ def main():
 def is_admin():
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.id == current_user.get_id()).first()
-    if type(user) != 'NoneType':
+    print(str(type(user)))
+    if str(type(user)) == "<class 'NoneType'>":
+        print(False)
         return False
-    if user.role == "admin":
+    elif user.role == "admin":
+        print(True)
         return True
     return False
 
@@ -247,15 +250,16 @@ def news_edit(id):
 
 
 @app.route('/profile/<int:id>', methods=['GET'])
-@login_required
 def viewing_profile(id):
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.id == id).first()
+    news = db_sess.query(News).filter(News.user_id == id, News.is_private != True)
     data = getuserdata(user.steam_id)
     return render_template('profile.html',
                            steam=data[0],
                            rank=data[1],
                            avatar=data[2],
+                           news=news,
                            user=user,
                            title='Редактирование новости'
                            )
